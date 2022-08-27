@@ -31,14 +31,22 @@ import utils.ExtentTestManager;
 public class CustomListener extends DriverFactory implements ITestListener
 {
 
-	
+	private Process process;
 	private String getTestMethodName(ITestResult iTestResult) {
         return iTestResult.getMethod().getConstructorOrMethod().getName();
     }
 	BaseActions actions = new BaseActions();
     @Override
     public void onStart(ITestContext iTestContext) {
-    	
+    	String wadServerPath = "C:\\Program Files (x86)\\Windows Application Driver\\WinAppDriver.exe";
+		ProcessBuilder builder = new ProcessBuilder(wadServerPath).inheritIO();
+		try {
+			 process = builder.start();
+			 LogUtil.infoLog(this.getClass(), "Started WinAppDriver process" );
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
     	LogUtil.infoLog(getClass(), "I am in onStart method " + iTestContext.getName());
         //System.out.println("I am in onStart method " + iTestContext.getName());
         //iTestContext.setAttribute("WindowsDriver", getWinDriver());
@@ -74,6 +82,8 @@ public class CustomListener extends DriverFactory implements ITestListener
 			}
 		}
 		
+		process.destroy();
+		LogUtil.infoLog(this.getClass(), "Destroyed WinAppDriver process" );
 		 if (ConfigReader.getValue("sendMail").equalsIgnoreCase("Y"))
 				try {
 					SendMail.sendEmailToClient();

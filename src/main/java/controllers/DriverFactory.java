@@ -59,7 +59,7 @@ public class DriverFactory
 			String platform=ConfigReader.getValue("Platform");
 			String app=ConfigReader.getValue("Windows_App");
 			LogUtil.infoLog(getClass(), "Platform: "+platform+"  Windows_App: "+app);
-	
+			
 			setWinDriver(createDriver(platform,app));	
 			context.setAttribute("WebDriver", getWinDriver());
 		}
