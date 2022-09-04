@@ -19,24 +19,26 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 
-import com.relevantcodes.extentreports.LogStatus;
+import com.aventstack.extentreports.Status;
+
 
 import io.appium.java_client.windows.WindowsDriver;
 import io.appium.java_client.windows.WindowsElement;
 import utils.ConfigReader;
-import utils.ExtentTestManager;
+import utils.ExtentReportsUtil;
+import utils.ExtentReportsUtil;
 import utils.LogUtil;
 
 /**
  * @Author Chandu
  * @Date 27-08-2022
  */
-public class DriverFactory
+public class DriverFactory extends ExtentReportsUtil
 {
 	//Enable for parallel test and enable AfterTest method
 	//public ThreadLocal<WindowsDriver<WindowsElement>> wd = new ThreadLocal<WindowsDriver<WindowsElement>>();
 	
-	//Enable for sequence tests and enable code in ITest Pass and Failed listner
+	//Enable for sequence tests and enable code in ITest Pass and Failed listener
 	public  static ThreadLocal<WindowsDriver<WindowsElement>> wd = new ThreadLocal<WindowsDriver<WindowsElement>>();
 	//public WindowsDriver<WindowsElement> wd_driver = null;
 	
@@ -86,25 +88,24 @@ public class DriverFactory
 	public void afterMethod(ITestResult iTestResult) 
 	{
 		String testName = iTestResult.getMethod().getConstructorOrMethod().getName();
-		ExtentTestManager.getTest().setEndedTime(new Date());
+		//getTest().setEndedTime(new Date());
 		if(iTestResult.isSuccess()) {
 		
     	//Extentreports log operation for passed tests.
-    	 ExtentTestManager.getTest().log(LogStatus.PASS, "Test passed : "+iTestResult.getMethod().getMethodName());
+    	 getTest().log(Status.PASS, "Test passed : "+iTestResult.getMethod().getMethodName());
     	 LogUtil.infoLog(getClass(),"Test passed : "+iTestResult.getMethod().getMethodName());
 		}
         else {
         	
-       	 ExtentTestManager.getTest().setEndedTime(new Date());
+       	// ExtentReportsUtil.getTest().setEndedTime(new Date());
        	 String  ErrorMsg=ExceptionUtils.getFullStackTrace(iTestResult.getThrowable());
        	 
            //Take base64Screenshot screenshot.
            String base64Screenshot = "data:image/png;base64,"+((TakesScreenshot)getWinDriver()). getScreenshotAs(OutputType.BASE64);
-           ExtentTestManager.getTest().addBase64ScreenShot(base64Screenshot);
+          // ExtentReportsUtil.getTest().addBase64ScreenShot(base64Screenshot);
            //Extentreports log and screenshot operations for failed tests.
-           ExtentTestManager.getTest().log(LogStatus.FAIL,"Test Failed : "+iTestResult.getMethod().getMethodName(),ErrorMsg);
-           ExtentTestManager.getTest().log(LogStatus.FAIL,"Test Failed : "+iTestResult.getMethod().getMethodName(),
-        		   ExtentTestManager.getTest().addBase64ScreenShot(base64Screenshot));
+           ExtentReportsUtil.getTest().log(Status.FAIL,"Test Failed : "+iTestResult.getMethod().getMethodName());
+           ExtentReportsUtil.getTest().addScreenCaptureFromBase64String(base64Screenshot);
            LogUtil.errorLog(getClass(), ErrorMsg,iTestResult.getThrowable());
        	
            

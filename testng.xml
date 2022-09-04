@@ -9,7 +9,7 @@
 	<test name="Smoke">
     <classes>
       <class name="com.smoke.tests.FilesTest"/>  
-      <class name="com.smoke.tests.WelcomeTest"/>
+       <class name="com.smoke.tests.WelcomeTest"/> 
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->
