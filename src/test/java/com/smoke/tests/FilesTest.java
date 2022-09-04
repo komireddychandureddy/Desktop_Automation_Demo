@@ -18,13 +18,16 @@ import controllers.DriverFactory;
 import listeners.CustomListener;
 import utils.ConfigReader;
 import utils.ExcelTestDataReader;
+import utils.ExtentReportsUtil;
 @Listeners(CustomListener.class)
 public class FilesTest extends DriverFactory
 {	
 
-	@Test(dataProvider="getExcelTestData",description ="Verify add and delete in TextEditor ")
+	@Test(dataProvider="getExcelTestData",description ="Verify add and delete in TextEditor ", testName="Login", suiteName="User1")
 	public void verifyTextEditor(HashMap<String, String> data)
 	{	
+		ExtentReportsUtil.getTest().assignAuthor("User2").assignCategory("Files").assignDevice("Windows 10");
+		
 		WelcomePage welcome =new WelcomePage(getWinDriver());
 		welcome.clickOnEdit();
 		EditPage edit =new EditPage(getWinDriver());

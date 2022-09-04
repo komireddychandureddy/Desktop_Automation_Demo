@@ -18,14 +18,16 @@ import controllers.DriverFactory;
 import listeners.CustomListener;
 import utils.ConfigReader;
 import utils.ExcelTestDataReader;
+import utils.ExtentReportsUtil;
 @Listeners(CustomListener.class)
 public class WelcomeTest extends DriverFactory
 {	
 
-	@Test(dataProvider="getExcelTestData",description ="Verify the welcome page objects")
+	@Test(dataProvider="getExcelTestData",description ="Verify the welcome page objects" )
 	public void welcomeTest(HashMap<String, String> data) 
 	{
-		
+			ExtentReportsUtil.getTest().assignAuthor("User1").assignCategory("Login").assignDevice("Windows 11");
+			
 			WelcomePage welcome =new WelcomePage(getWinDriver());
 			welcome.verifyNotepadTitle();
 			Assert.assertEquals(true, 	welcome.clickOnAllTabs());

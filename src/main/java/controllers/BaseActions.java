@@ -65,7 +65,7 @@ import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 import utils.ConfigReader;
-import utils.ExtentTestManager;
+import utils.ExtentReportsUtil;
 import utils.LogUtil;
 
 /**
@@ -87,19 +87,22 @@ public class BaseActions
 	
 	public void logStep(String logStep) {
 		LogUtil.infoLog(this.getClass(), logStep);
-		ExtentTestManager.stepInfo(logStep);
+		ExtentReportsUtil.getLogger().info(logStep);
+		ExtentReportsUtil.stepInfo(logStep);
 	}
 	
 		
 	public void logStepFail(String logStep) {
 				   
 		LogUtil.infoLog(this.getClass(), "Failed :"+logStep);
-		ExtentTestManager.stepFail(logStep);
+		ExtentReportsUtil.stepFail(logStep);
+		ExtentReportsUtil.getLogger().error(logStep);
 	}
 	
 	public void logStepPass(String logStep) {
 		LogUtil.infoLog(this.getClass(),"Passed: "+ logStep);
-		ExtentTestManager.stepPass(logStep);
+		ExtentReportsUtil.stepPass(logStep);
+		ExtentReportsUtil.getLogger().info(logStep);
 	}
 	
 	/* To Press ENTER Key using Robot */

@@ -12,15 +12,15 @@ import org.openqa.selenium.TakesScreenshot;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import com.relevantcodes.extentreports.LogStatus;
 
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import controllers.BaseActions;
 import controllers.DriverFactory;
 import utils.LogUtil;
 import utils.SendMail;
 import utils.ConfigReader;
-import utils.ExtentManager;
-import utils.ExtentTestManager;
+import utils.ExtentReportsUtil;
 
 
 /**
@@ -38,6 +38,8 @@ public class CustomListener extends DriverFactory implements ITestListener
 	BaseActions actions = new BaseActions();
     @Override
     public void onStart(ITestContext iTestContext) {
+    	ExtentReportsUtil.getReporter();
+    	ExtentReportsUtil.getLogger();
     	String wadServerPath = "C:\\Program Files (x86)\\Windows Application Driver\\WinAppDriver.exe";
 		ProcessBuilder builder = new ProcessBuilder(wadServerPath).inheritIO();
 		try {
@@ -60,8 +62,8 @@ public class CustomListener extends DriverFactory implements ITestListener
     public void onFinish(ITestContext iTestContext) {
         LogUtil.infoLog(getClass(), "I am in onFinish method " + iTestContext.getName());
         //Do tier down operations for extentreports reporting!
-        ExtentTestManager.endTest();
-        ExtentManager.getReporter().flush();
+        //ExtentReportsUtil.endTest();
+        ExtentReportsUtil.flush();
         LogUtil.infoLog(getClass(), "Report closed ");
         
         if(!(getWinDriver()==null)){
@@ -69,7 +71,9 @@ public class CustomListener extends DriverFactory implements ITestListener
         }
       
         
-        String htmlReportFile = PWD+  ConfigReader.getValue("HtmlReportFullPath");
+        //String htmlReportFile = PWD+  ConfigReader.getValue("HtmlReportFullPath");
+        String htmlReportFile = PWD+       "/target/Spark/Spark.html";
+   
 		File f = new File(htmlReportFile);
 		if (f.exists()) {
 
@@ -102,9 +106,10 @@ public class CustomListener extends DriverFactory implements ITestListener
     public void onTestStart(ITestResult iTestResult) {
     	LogUtil.infoLog(getClass(), "Testcase started: "+getTestMethodName(iTestResult) );
 
-        ExtentTestManager.startTest(iTestResult.getMethod().getMethodName(),iTestResult.getMethod().getDescription());
-        String description=iTestResult.getMethod().getDescription();
-		ExtentTestManager.getTest().setDescription(description);
+        ExtentReportsUtil.startTest(iTestResult.getMethod().getMethodName(),iTestResult.getMethod().getDescription());
+       // String description=iTestResult.getMethod().getDescription();
+        actions.logStep("Test : "+iTestResult.getMethod().getMethodName());
+    
     }
 
     @Override
@@ -113,8 +118,8 @@ public class CustomListener extends DriverFactory implements ITestListener
     	String testName = getTestMethodName(iTestResult);
     	//Extentreports log operation for passed tests.
     	//logStepPass("Test passed : "+iTestResult.getMethod().getMethodName());
-        ExtentTestManager.getTest().log(LogStatus.PASS, "Test passed : "+iTestResult.getMethod().getMethodName());
-        ExtentTestManager.getTest().setEndedTime(new Date());
+        ExtentReportsUtil.getTest().log(Status.PASS, "Test passed : "+iTestResult.getMethod().getMethodName());
+      //  ExtentReportsUtil.getTest().setEndedTime(new Date());
         getWinDriver().close();
         
     }
@@ -123,7 +128,7 @@ public class CustomListener extends DriverFactory implements ITestListener
     public void onTestFailure(ITestResult iTestResult)  {
     	
     	String testName = getTestMethodName(iTestResult);
-    	 ExtentTestManager.getTest().setEndedTime(new Date());
+    	// ExtentReportsUtil.getTest().setEndedTime(new Date());
     	 String  ErrorMsg=ExceptionUtils.getFullStackTrace(iTestResult.getThrowable());
     	 actions.logStepFail(ErrorMsg);
         //Take base64Screenshot screenshot.
@@ -133,11 +138,15 @@ public class CustomListener extends DriverFactory implements ITestListener
         
         String path =actions.takeScreenshot(getWinDriver(), testName);
         
-        ExtentTestManager.getTest().log(LogStatus.FAIL,"Test Failed : "+iTestResult.getMethod().getMethodName(),
-        ExtentTestManager.getTest().addBase64ScreenShot(base64Screenshot));
-       // ExtentTestManager.getTest().addScreenCapture(actions.screenshot_path));
+        ExtentReportsUtil.getTest().log(Status.FAIL,"Test Failed : "+iTestResult.getMethod().getMethodName());
+        //ExtentReportsUtil.getTest().fail(Status.FAIL, addScreenCaptureFromPath(path));
+        ExtentReportsUtil.getTest().fail(MediaEntityBuilder.createScreenCaptureFromPath(path).build());
+
+     // base64
+        ExtentReportsUtil.getTest().fail(MediaEntityBuilder.createScreenCaptureFromBase64String(base64Screenshot).build());
+       // ExtentReportsUtil.getTest().addScreenCapture(actions.screenshot_path));
         
-        actions.logStepFail("Test failed : "+iTestResult.getMethod().getMethodName());
+        //actions.logStepFail("Test failed : "+iTestResult.getMethod().getMethodName());
         
         
 	 getWinDriver().close();
@@ -148,8 +157,8 @@ public class CustomListener extends DriverFactory implements ITestListener
     @Override
     public void onTestSkipped(ITestResult iTestResult) {
     	LogUtil.infoLog(getClass(), "Test Skipped"+getTestMethodName(iTestResult));
-       ExtentTestManager.getTest().setEndedTime(new Date());
-       ExtentTestManager.getTest().log(LogStatus.SKIP, "Test Skipped : "+getTestMethodName(iTestResult));
+       
+       ExtentReportsUtil.getTest().log(Status.SKIP, "Test Skipped : "+getTestMethodName(iTestResult));
        
     }
 
