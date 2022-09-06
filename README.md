@@ -1,7 +1,7 @@
-## Desktop_Automation_Demo
+# Desktop_Automation_Demo
 Desktop_Automation_Demo(Windows 10 + Appium + TestNG + Maven + ExtentReports)
 
-# Features of Framework
+## Features of Framework
 1. PageObjectModel (POM)
 2. DataDriven
 3. Parallel Runs
